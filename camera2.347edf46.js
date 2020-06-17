@@ -85694,8 +85694,9 @@ var startDefaultPose = function startDefaultPose() {
 
     startDefaultPose();
   }, 10000);
-}; // Camera stream video element
+};
 
+var animationFrameId = 0; // Camera stream video element
 
 var video;
 var videoWidth = 300;
@@ -85863,6 +85864,10 @@ function setupFPS() {
 
 
 function detectPoseInRealTime(video) {
+  if (animationFrameId > 0) {
+    cancelAnimationFrame(animationFrameId);
+  }
+
   var canvas = document.getElementById('output');
   var keypointCanvas = document.getElementById('keypoints');
   var videoCtx = canvas.getContext('2d');
@@ -85938,7 +85943,7 @@ function detectPoseInRealTime(video) {
               if (poses.length === 0) {
                 currentPoses = defaultPoses[currentPoseIndex];
                 poses = currentPoses;
-                ++currentPoseIndex;
+                ++currentPoseIndex; // console.log(currentPoseIndex);
 
                 if (currentPoseIndex >= defaultPoses.length) {
                   currentPoseIndex = 0;
@@ -85966,7 +85971,7 @@ function detectPoseInRealTime(video) {
               canvasScope.project.activeLayer.scale(canvasWidth / videoWidth, canvasHeight / videoHeight, new canvasScope.Point(0, 0)); // End monitoring code for frames per second
 
               stats.end();
-              requestAnimationFrame(poseDetectionFrame);
+              animationFrameId = requestAnimationFrame(poseDetectionFrame);
 
             case 25:
             case "end":
@@ -86043,36 +86048,37 @@ function _bindPage() {
 
           case 14:
             (0, _demoUtils.setStatusText)('Setting up camera...');
-            _context4.prev = 15;
-            _context4.next = 18;
+            detectPoseInRealTime(document.getElementById('video'), posenet);
+            _context4.prev = 16;
+            _context4.next = 19;
             return loadVideo();
 
-          case 18:
+          case 19:
             video = _context4.sent;
-            _context4.next = 27;
+            _context4.next = 28;
             break;
 
-          case 21:
-            _context4.prev = 21;
-            _context4.t0 = _context4["catch"](15);
+          case 22:
+            _context4.prev = 22;
+            _context4.t0 = _context4["catch"](16);
             info = document.getElementById('info');
             info.textContent = 'this device type is not supported yet, ' + 'or this browser does not support video capture: ' + _context4.t0.toString();
             info.style.display = 'block';
             throw _context4.t0;
 
-          case 27:
+          case 28:
             setupGui([], posenet); // fps
             // setupFPS();
 
             (0, _demoUtils.toggleLoadingUI)(false);
             detectPoseInRealTime(video, posenet);
 
-          case 30:
+          case 31:
           case "end":
             return _context4.stop();
         }
       }
-    }, _callee4, null, [[15, 21]]);
+    }, _callee4, null, [[16, 22]]);
   }));
   return _bindPage.apply(this, arguments);
 }
